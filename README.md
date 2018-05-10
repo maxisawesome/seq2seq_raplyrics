@@ -2,7 +2,7 @@ This repo contains a seq2seq neural network trained on the phonemes of rap lyric
 
 The main code is stored in the ipython file. Ideally you should be able to run all the cells there and your model will start training.
 
-Note: I realized I edited the dictionary file of my cmu pronounciation dictionary. I added many new pronounciations,including for common endings like "in'", so you might run iunto errors due to that.
+Note: I realized I edited the dictionary file of my cmu pronounciation dictionary. I added many new pronounciations, including for common endings like "in'", so you might run into errors due to that.
 
 Here are some pictures of predictions and their corresponding attentions. Some things clearly are stil finnickey, but cool none the less.
 
