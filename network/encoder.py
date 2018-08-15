@@ -23,5 +23,6 @@ class encoderRNN(nn.Module):
         return Variable(torch.zeroes(2,1,1,self.hidden))
 
 if __name__== '__main__':
+    # dummy values
     net = encoderRNN(42, 100, 1024)
     print(net)

@@ -8,13 +8,15 @@ import pandas as pd
 import os
 import json
 import numpy as np
+import pathlib
+import time
 
 from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 
 
 class LyricGenerator(Dataset):
-    def __init__(self, root_dir='lyric_files/'):
+    def __init__(self, max_len):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -23,8 +25,6 @@ class LyricGenerator(Dataset):
         self.phoneme2index = {'<SOS>': 0, '<EOS>': 1, '<PAD>': 2}
         self.phoneme2count = {}
         self.index2phoneme = {0: "<SOS>", 1: "<EOS>", 2: "<PAD>"}
-        self.word2phoneme = {}
-
 
         self.word2index = {'<SOS>': 0, '<EOS>': 1, '<PAD>': 2}
         self.word2count = {}
@@ -32,25 +32,30 @@ class LyricGenerator(Dataset):
         
         self.n_words = 3  # Count SOS and EOS
         self.n_phonemes = 3
-        #self.max_len = max_len
+        self.data_dir = pathlib.Path(__file__).parents[0].resolve() / 'lyric_files'
+
+        self.pairs = []
+
+        self.max_len = max_len
 
         lst = [("<SOS>",["<SOS>"]),("<EOS>",["<EOS>"]),("<PAD>",["<PAD>"])]
-        words = [word.rstrip('\n') for word in open('words_in_lyrics')]
-        pronunciations = [word.rstrip('\n') for word in open('pho_dict')]
+        words = [word.rstrip('\n') for word in open('data/words_in_lyrics')]
+        pronunciations = [word.rstrip('\n') for word in open('data/pho_dict')]
         
         for ind in range(len(words)):
             lst.append((words[ind], pronunciations[ind].split()))
                                                   
         self.word2pho = dict(lst)
-        self.pairs = []
-
+        
+    def load_data(self):
+        # The following gets all the data from the data files
         table = str.maketrans('', '', string.punctuation)
         print('Constructing Dataset...')
-        line_counter = 0 
-        for fl in os.listdir(root_dir):
-            print(fl)
+        t = time.time()
+        for fl in os.listdir(self.data_dir):
+            #print(fl)
             # this is hard coded so its bad
-            with open('lyric_files/'+ fl) as f:
+            with open(self.data_dir / fl) as f:
                 data = json.load(f)
                 for song in data['songs']:
                     # split the lyrics into lines by removing odd chars + lowercase
@@ -58,7 +63,6 @@ class LyricGenerator(Dataset):
                     lines = [l for l in lines if len(l)>0]
 
                     for ind in range(len(lines)-1):
-                        line_counter += 1
                         line1 = lines[ind].split()
                         line2 = lines[ind+1].split()
                         #this gets rid of weird non-ascii characters like right quote + stuff like that 
@@ -92,14 +96,15 @@ class LyricGenerator(Dataset):
                         if len(line1_vowels) > 0 and len(line2_vowels) > 0 and \
                                 line1_vowels[-1] == line2_vowels[-1] and \
                                 line1 != line2:
-                            #while len(line1) < self.max_len:
-                            #    line1.append('<PAD>')
+                            line1 = self.phonemesFromLine(line1)
+                            while len(line1) < self.max_len:
+                                line1.append('<PAD>')
 
                             self.pairs.append([line1, line2])
-            
-        #print('total lines:', line_counter)
+        t = time.time()-t
+        print('Took %s seconds' % (t,))
         random.shuffle(self.pairs)
-
+    
 
     def addWord(self, word):
         if word not in self.word2index:
@@ -131,7 +136,8 @@ class LyricGenerator(Dataset):
         return len(self.pairs)
 
     def __getitem__(self, idx):
-        return self.pairs[idx]
+        x, y = self.pairs[idx]
+        return x, y
 
 def get_vowels(pronunciation):
     vowels = ['AA','AE','AH','AO','AW','AY','EH','ER','EY','IH','IY','OW','OY','UH','UW','Y']
@@ -139,7 +145,8 @@ def get_vowels(pronunciation):
     return found_vowels
 
 if __name__ == '__main__':
-    data = LyricGenerator('lyric_files')
+    data = LyricGenerator(35)
+    data.load_data()
     print(len(data))
     for _ in range(3):
         print(random.choice(data))

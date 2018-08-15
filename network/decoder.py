@@ -1,4 +1,4 @@
-from seq2seq_rapylrics.data import phonemesFromWord
+#from seq2seq_raplyrics.data import phonemesFromWord
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
