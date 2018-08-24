@@ -97,6 +97,7 @@ class LyricGenerator(Dataset):
                                 line1_vowels[-1] == line2_vowels[-1] and \
                                 line1 != line2:
                             line1 = self.phonemesFromLine(line1)
+                            line2 = self.phonemesFromLine(line2)
                             while len(line1) < self.max_len:
                                 line1.append('<PAD>')
 
@@ -131,12 +132,13 @@ class LyricGenerator(Dataset):
         foo = [pho for word in foo for pho in word]
         return foo
 
-
     def __len__(self):
         return len(self.pairs)
 
     def __getitem__(self, idx):
         x, y = self.pairs[idx]
+        x = [self.phoneme2index[pho] for pho in x]
+        y = [self.phoneme2index[pho] for pho in y]
         return x, y
 
 def get_vowels(pronunciation):

@@ -3,6 +3,7 @@ import json
 import importlib
 from typing import Dict
 import os
+from torch.utils.data import Dataset, DataLoader
 from data.base import LyricGenerator
 from network.encoder import encoderRNN
 from network.decoder import decoderRNN
@@ -12,9 +13,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
     """
     experiment_config is of the form
     {
-        "dataset_args": {
-            "max_len": 20
-        },
+        "max_len": 20,
         "network_args": {
             "hidden": 1024,
             "phoneme_embedding": 128
@@ -29,10 +28,12 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
     #print(f'Running experiment with config {experiment_config}') # on GPU {gpu_ind}')
     #datasets_module = importlib.import_module('seq2seq_raplyrics.data')
     #dataset_class_ = getattr(datasets_module, 'LyricGenerator')
-    data = LyricGenerator(experiment_config["dataset_args"]["max_len"])
+    print(experiment_config)
+    data = LyricGenerator(experiment_config["max_len"])
     data.load_data()
+
     encoder = encoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"])
-    decoder = decoderRNN(data.n_phonemes, data.n_words, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"], experiment_config["dataset_args"]["max_len"])
+    decoder = decoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"], experiment_config["max_len"])
     print(encoder)
     print(decoder)
     print("Total sentences: %d" % (len(data),))
@@ -60,7 +61,6 @@ if __name__ == '__main__':
         type=str,
         help="JSON of experiment to run (e.g. '{\"dataset_args\": {\"max_len\": 20},\"network_args\": {\"hidden\": 1024,\"phoneme_embedding\": 128},\"train_args\": {\"batch_size\": 16,\"epochs\": 10}}"
     )
-
     args = parser.parse_args()
     experiment_config = json.loads(args.experiment_config)
     run_experiment(experiment_config, args.save)

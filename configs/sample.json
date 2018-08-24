@@ -1,0 +1,11 @@
+{
+    "max_len": 2,
+    "network_args": {
+        "hidden": 1024,
+        "phoneme_embedding": 128
+    },
+    "train_args": {
+        "batch_size": 128,
+        "epochs": 10
+    }
+}
