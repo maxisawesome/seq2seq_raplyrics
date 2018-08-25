@@ -100,8 +100,10 @@ class LyricGenerator(Dataset):
                             line2 = self.phonemesFromLine(line2)
                             while len(line1) < self.max_len:
                                 line1.append('<PAD>')
-
-                            self.pairs.append([line1, line2])
+                                # only need to pad encoder, don't need to pad decoder b/c
+                                # we predict it
+                            if len(line1) <= self.max_len and len(line2) <= self.max_len:
+                                self.pairs.append([line1, line2])
         t = time.time()-t
         print('Took %s seconds' % (t,))
         random.shuffle(self.pairs)

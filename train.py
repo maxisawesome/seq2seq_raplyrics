@@ -43,7 +43,8 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
         encoder,
         decoder,
         experiment_config["train_args"]["batch_size"],
-        experiment_config["train_args"]["epochs"]
+        experiment_config["train_args"]["epochs"],
+        .3
     )
 
 

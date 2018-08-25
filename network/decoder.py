@@ -2,6 +2,8 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+import torch.nn.functional as F
+
 
 class decoderRNN(nn.Module):
     def __init__(self, total_phonemes, phoneme_embedding, hidden, max_len, dropout_p=.2):
@@ -12,25 +14,26 @@ class decoderRNN(nn.Module):
 
         self.embedding = nn.Embedding(total_phonemes, phoneme_embedding)
         self.attn = nn.Linear(hidden+phoneme_embedding, max_len)
-        self.attn_combine = nn.Linear(hidden+phoneme_embedding, hidden)
+        self.attn_combine = nn.Linear(hidden*2+phoneme_embedding, hidden)
         self.dropout = nn.Dropout(dropout_p)
-        self.gru = nn.GRU(hidden, hidden)
-        self.word_out = nn.Linear(hidden, total_phonemes)
+        self.gru = nn.GRU(hidden, hidden, num_layers=2)
+        self.pho_out = nn.Linear(hidden, total_phonemes)
 
     def forward(self, ipt, hidden, encoder_outputs):
         embedded = self.embedding(ipt).view(1,1,-1)
         embedded = self.dropout(embedded)
 
-        attn_weight = F.softmax(self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
+        attn_weights = F.softmax(self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
         attn_applied = torch.bmm(attn_weights.unsqueeze(0), encoder_outputs.unsqueeze(0))
 
-        output = torch.cat((embedded[0], attn_applied[0]), 1)
+        output = torch.cat((embedded[0], attn_applied[0]), dim=1)
         output = self.attn_combine(output).unsqueeze(0)
         output = F.relu(output)
-        out, hidden = self.gru(output, hidden)
+        output, hidden = self.gru(output, hidden)
     
-        output = F.log_softmax(self.word_out(pho_out[0]), dim=1)
-        return output, pho_hidden, attn_weights
+        #import pdb; pdb.set_trace()
+        output = F.log_softmax(self.pho_out(output)[0], dim=1)
+        return output, hidden, attn_weights
 
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden)

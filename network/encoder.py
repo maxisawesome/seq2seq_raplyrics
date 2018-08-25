@@ -11,16 +11,17 @@ class encoderRNN(nn.Module):
         self.phonemeEmbedding = nn.Embedding(total_phonemes, phoneme_embedding)
         # Takes the embedding, sticks it through an LSTM. Bidirectional, so output
         # is of size hidden*2
-        self.phonemeGRU = nn.GRU(phoneme_embedding, hidden, num_layers=2, bidirectional=True)
+        self.phonemeGRU = nn.GRU(phoneme_embedding, hidden, bidirectional=True)
         
 
     def forward(self, ipt, iptHidden):
+       #import pdb; pdb.set_trace()
        phonemeEmbedding = self.phonemeEmbedding(ipt).view(1, 1, -1)
        phonemeOutput, phonemeHidden = self.phonemeGRU(phonemeEmbedding, iptHidden)
        return phonemeOutput, phonemeHidden
 
     def initHidden(self):
-        return Variable(torch.zeroes(2,1,1,self.hidden))
+        return Variable(torch.zeros(2, 1, self.hidden))
 
 if __name__== '__main__':
     # dummy values
