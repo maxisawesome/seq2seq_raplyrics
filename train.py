@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from data.base import LyricGenerator
 from network.encoder import encoderRNN
 from network.decoder import decoderRNN
-from util import train_model
+from util import train_model, show_batch
 
 def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=False):
     """
@@ -31,7 +31,8 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
     print(experiment_config)
     data = LyricGenerator(experiment_config["max_len"])
     data.load_data()
-
+    dataloader = DataLoader(data, batch_size=experiment_config["train_args"]['batch_size'], shuffle=True)
+    #show_batch(data, dataloader)
     encoder = encoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"])
     decoder = decoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"], experiment_config["max_len"])
     print(encoder)
@@ -39,7 +40,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
     print("Total sentences: %d" % (len(data),))
 
     train_model(
-        data,
+        dataloader,
         encoder,
         decoder,
         experiment_config["train_args"]["batch_size"],

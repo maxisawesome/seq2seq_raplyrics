@@ -6,6 +6,7 @@ class encoderRNN(nn.Module):
     def __init__(self, total_phonemes, phoneme_embedding, hidden):
         super(encoderRNN, self).__init__()
         self.hidden = hidden
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Takes in a one-hot encoded phoneme, outputs an embedding
         self.phonemeEmbedding = nn.Embedding(total_phonemes, phoneme_embedding)
@@ -21,7 +22,7 @@ class encoderRNN(nn.Module):
        return phonemeOutput, phonemeHidden
 
     def initHidden(self):
-        return Variable(torch.zeros(2, 1, self.hidden))
+        return torch.zeros(2, 1, self.hidden, device=self.device)
 
 if __name__== '__main__':
     # dummy values

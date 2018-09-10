@@ -34,7 +34,8 @@ class LyricGenerator(Dataset):
         self.n_phonemes = 3
         self.data_dir = pathlib.Path(__file__).parents[0].resolve() / 'lyric_files'
 
-        self.pairs = []
+        self.pairs_phonemes = []
+        self.pairs_words = []
 
         self.max_len = max_len
 
@@ -96,17 +97,19 @@ class LyricGenerator(Dataset):
                         if len(line1_vowels) > 0 and len(line2_vowels) > 0 and \
                                 line1_vowels[-1] == line2_vowels[-1] and \
                                 line1 != line2:
-                            line1 = self.phonemesFromLine(line1)
-                            line2 = self.phonemesFromLine(line2)
-                            while len(line1) < self.max_len:
-                                line1.append('<PAD>')
-                                # only need to pad encoder, don't need to pad decoder b/c
-                                # we predict it
-                            if len(line1) <= self.max_len and len(line2) <= self.max_len:
-                                self.pairs.append([line1, line2])
+                            line1_pho = self.phonemesFromLine(line1)
+                            line2_pho = self.phonemesFromLine(line2)
+                            while len(line1_pho) < self.max_len:
+                                line1_pho.append('<PAD>')
+                            while len(line2_pho) < self.max_len:
+                                line2_pho.insert(0, '<PAD>')
+                            if len(line1_pho) <= self.max_len and len(line2_pho) <= self.max_len:
+                                self.pairs_phonemes.append([line1_pho, line2_pho])
+                                self.pairs_words.append([line1, line2])
+                                self.pairs_phonemes.append([line2_pho, line1_pho])
+                                self.pairs_words.append([line2, line1])
         t = time.time()-t
         print('Took %s seconds' % (t,))
-        random.shuffle(self.pairs)
     
 
     def addWord(self, word):
@@ -135,10 +138,10 @@ class LyricGenerator(Dataset):
         return foo
 
     def __len__(self):
-        return len(self.pairs)
+        return len(self.pairs_phonemes)
 
     def __getitem__(self, idx):
-        x, y = self.pairs[idx]
+        x, y = self.pairs_phonemes[idx]
         x = [self.phoneme2index[pho] for pho in x]
         y = [self.phoneme2index[pho] for pho in y]
         return x, y

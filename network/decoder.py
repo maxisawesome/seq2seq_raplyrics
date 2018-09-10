@@ -4,7 +4,6 @@ import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
 
-
 class decoderRNN(nn.Module):
     def __init__(self, total_phonemes, phoneme_embedding, hidden, max_len, dropout_p=.2):
         super(decoderRNN, self).__init__()
@@ -12,6 +11,8 @@ class decoderRNN(nn.Module):
         self.ouput = total_phonemes
         self.dropout = dropout_p
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
         self.embedding = nn.Embedding(total_phonemes, phoneme_embedding)
         self.attn = nn.Linear(hidden+phoneme_embedding, max_len)
         self.attn_combine = nn.Linear(hidden*2+phoneme_embedding, hidden)
@@ -36,7 +37,7 @@ class decoderRNN(nn.Module):
         return output, hidden, attn_weights
 
     def initHidden(self):
-        return torch.zeros(1, 1, self.hidden)
+        return torch.zeros(1, 1, self.hidden, device=self.device)
 
 if __name__ == "__main__":
     # these are dummy numbers just to check 
