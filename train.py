@@ -3,6 +3,7 @@ import json
 import importlib
 from typing import Dict
 import os
+import torch
 from torch.utils.data import Dataset, DataLoader
 from data.base import LyricGenerator
 from network.encoder import encoderRNN
@@ -29,12 +30,13 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool=
     #datasets_module = importlib.import_module('seq2seq_raplyrics.data')
     #dataset_class_ = getattr(datasets_module, 'LyricGenerator')
     print(experiment_config)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     data = LyricGenerator(experiment_config["max_len"])
     data.load_data()
     dataloader = DataLoader(data, batch_size=experiment_config["train_args"]['batch_size'], shuffle=True)
     #show_batch(data, dataloader)
-    encoder = encoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"])
-    decoder = decoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"], experiment_config["max_len"])
+    encoder = encoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"]).to(device)
+    decoder = decoderRNN(data.n_phonemes, experiment_config["network_args"]["phoneme_embedding"], experiment_config["network_args"]["hidden"], experiment_config["max_len"]).to(device)
     print(encoder)
     print(decoder)
     print("Total sentences: %d" % (len(data),))

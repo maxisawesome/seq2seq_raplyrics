@@ -106,8 +106,8 @@ class LyricGenerator(Dataset):
                             if len(line1_pho) <= self.max_len and len(line2_pho) <= self.max_len:
                                 self.pairs_phonemes.append([line1_pho, line2_pho])
                                 self.pairs_words.append([line1, line2])
-                                self.pairs_phonemes.append([line2_pho, line1_pho])
-                                self.pairs_words.append([line2, line1])
+                                #self.pairs_phonemes.append([line2_pho, line1_pho])
+                                #self.pairs_words.append([line2, line1])
         t = time.time()-t
         print('Took %s seconds' % (t,))
     

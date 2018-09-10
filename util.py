@@ -60,10 +60,13 @@ def train_model(dataloader, enc, dec, bs, n_epochs, teacher_forcing_ratio):
             #for each line in batch, get input and target vars, make them tensors
             #Get loss from dec, add it to total loss. 
             #after batch runs, backprop w/ loss
-            for idx in range(bs):
+            for idx in range(len(enc_lines)):
+                try:
+                    reverse_dec_line = np.flip(dec_lines[idx], 0)
+                except:
+                    import pdb; pdb.set_trace()
                 input_variable = Variable(torch.tensor(enc_lines[idx], dtype=torch.long, device=device))
-                target_variable = Variable(torch.tensor(dec_lines[idx], dtype=torch.long, device=device))
-                # target_variable is still "forwards". We'll iterate through it backwards to predict in the opposite direction
+                target_variable = Variable(torch.tensor(reverse_dec_line.copy(), dtype=torch.long, device=device))
                 batch_loss += trainBackwards(input_variable, target_variable, enc, dec, criterion, teacher_forcing_ratio)
 
             loss = batch_loss/bs
@@ -109,7 +112,6 @@ def trainBackwards(ipt, target, enc, dec, criterion, teacher_forcing_ratio):
     use_tf = True if random.random() < teacher_forcing_ratio else False
 
     dec_in = target[0]
-    import pdb; pdb.set_trace()
 
     if use_tf:
         for d_i in range(1, target_length):
