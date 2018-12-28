@@ -5,7 +5,7 @@ import random
 from torch import optim
 from torch.autograd import Variable
 import numpy as np
-
+from pympler.tracker import SummaryTracker
 
 lst = [("<SOS>",["<SOS>"]),("<EOS>",["<EOS>"]),("<PAD>",["<PAD>"])]
 words = [word.rstrip('\n') for word in open('data/words_in_lyrics')]
@@ -31,8 +31,9 @@ def train_model(dataloader, enc, dec, bs, n_epochs, teacher_forcing_ratio):
             teacher_forcing_ratio (float): how often to use teacher forcing (when decoding, feed
                 values from answer rather than own predictions)
     """
+    tracker = SummaryTracker()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    print("Device being used: " + device)
     start = time.time()
     enc_opt = optim.Adam(enc.parameters())
     dec_opt = optim.Adam(dec.parameters())
@@ -61,12 +62,9 @@ def train_model(dataloader, enc, dec, bs, n_epochs, teacher_forcing_ratio):
             #Get loss from dec, add it to total loss. 
             #after batch runs, backprop w/ loss
             for idx in range(len(enc_lines)):
-                try:
-                    reverse_dec_line = np.flip(dec_lines[idx], 0)
-                except:
-                    import pdb; pdb.set_trace()
+                #reverse_dec_line = np.flip(dec_lines[idx], 0)
                 input_variable = Variable(torch.tensor(enc_lines[idx], dtype=torch.long, device=device))
-                target_variable = Variable(torch.tensor(reverse_dec_line.copy(), dtype=torch.long, device=device))
+                target_variable = Variable(torch.tensor(dec_lines[idx], dtype=torch.long, device=device))
                 batch_loss += trainBackwards(input_variable, target_variable, enc, dec, criterion, teacher_forcing_ratio)
 
             loss = batch_loss/bs
@@ -74,10 +72,11 @@ def train_model(dataloader, enc, dec, bs, n_epochs, teacher_forcing_ratio):
             enc_opt.step()
             dec_opt.step()
             plot_losses.append(batch_loss)
-
             if n % 100 == 0:
                 print('On Batch %d' % n)
                 print('Loss: %f' % batch_loss)
+                #print(mem_top())
+                tracker.print_diff()
             final_n = n
         print("Total Batches: %d" % final_n)
 
@@ -91,7 +90,7 @@ def trainBackwards(ipt, target, enc, dec, criterion, teacher_forcing_ratio):
         criterion: the loss function
         teacher_forcing_ratio (float): how often to use teacher forcing (when decoding, feed
                 values from answer rather than own predictions)
-    
+
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

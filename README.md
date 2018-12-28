@@ -18,8 +18,6 @@ If you have suggestions of more artists, please lemme know as more data means mo
 
 Data augmentation is big in computer vision, and this task is pretty data hungry. Ways I'm considering increasing the amount of data include reversing pairs (treating the couplet as valid if line 1 and line 2 were swapped), replacing words with extremely similarly constructed words, replacing similar phonemes ('DH' and 'T', 'G' and 'K', or 'AA' and 'EY').
 
-Still in progress, check back for updates soon!
-
 Here are some pictures of predictions and their corresponding attentions. Some things clearly are stil finnickey, but cool none the less.
 
 ![output 1](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out1.png)
