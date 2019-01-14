@@ -1,6 +1,3 @@
-This repo is kinda a mess right now as I'm completely changing the codebase. Ideally the notbeook in the main directory will still work, but you might have to change some pointers to certain files.... sorry about that!!
-
-
 
 This repo contains a seq2seq neural network trained on the phonemes of rap lyrics. The architecture is based on Pytorch's basic machine translation tutorial, found here: https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html. It also contains an implementation of beam search for final answers. As such, it stands as an encoder-decoder model with attention. 
 
