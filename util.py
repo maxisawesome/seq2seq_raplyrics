@@ -33,7 +33,7 @@ def train_model(dataloader, enc, dec, bs, n_epochs, teacher_forcing_ratio):
     """
     tracker = SummaryTracker()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("Device being used: " + device)
+    print("Device being used: ", device)
     start = time.time()
     enc_opt = optim.Adam(enc.parameters())
     dec_opt = optim.Adam(dec.parameters())
