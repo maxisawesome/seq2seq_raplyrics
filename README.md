@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 This repo contains a seq2seq neural network trained on the phonemes of rap lyrics. The architecture is based on Pytorch's basic machine translation tutorial, found ![here](https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html). It currently stands as an encoder-decoder model with attention. 
 
 Instead of computing on words, the model computes on phonemes. Using g2p-seq2seq, all the words have been converted to a series of phonemes like ![NLTK's phoneme list.](http://www.nltk.org/_modules/nltk/corpus/reader/cmudict.html)
 
+<<<<<<< Updated upstream
 Rapping is clearly more than just choosing the correct sytactic words, which is the main motivation behind analyzing phonemes. Ideally, when feeding lists of phonemes through the network, we can capture more patterns relating to the sounds and rythym of the lines as they appear in rap. Currently working to implement Allison Parrish's ![phonetic similarity vectors](https://github.com/aparrish/phonetic-similarity-vectors).
+=======
+Rapping is clearly more than just choosing the correct words, which is the main motivation behind analyzing phonemes. Ideally, when feeding lists of phonemes through the network, we can capture more patterns relating to the sounds and rythym of the lines as they appear in rap. Currently working to implement Allison Parrish's ![phonetic similarity vectors](https://github.com/aparrish/phonetic-similarity-vectors).
+=======
+>>>>>>> 00d02691d36efd08a061d88765884b65c0223da3
+>>>>>>> Stashed changes
 
 To run training, execute the run_train.sh script found in the main directory. For experimentation, please use the notebooks in the notebook folder. 
 
