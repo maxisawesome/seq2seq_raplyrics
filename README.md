@@ -19,8 +19,8 @@ If you have suggestions of more artists, please lemme know as more data means mo
 Here are some pictures of predictions and their corresponding attentions. 
 
 ![output 1](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out1.png)
-![output 2](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out2.png)
-![output 3](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out3.png)
-![output 4](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out4.png)
-![output 5](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out5.png)
-![output 6](https://github.com/maxisawesome/seq2seq_raplyrics/blob/master/nn_out6.png)
+![output 2](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out2.png)
+![output 3](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out3.png)
+![output 4](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out4.png)
+![output 5](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out5.png)
+![output 6](https://raw.githubusercontent.com/maxisawesome/seq2seq_raplyrics/master/imgs/nn_out6.png)
